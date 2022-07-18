@@ -9,5 +9,5 @@ ENV SERVICE_PORT=8080
 ENV MSG="CIAO COME STAI?"
 COPY --from=build-stage /home/gradle/build/libs/SimpleService-0.0.1-SNAPSHOT.jar /app.jar
 
-ENTRYPOINT ["java","--jar","app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
 

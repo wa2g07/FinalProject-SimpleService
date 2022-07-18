@@ -1,0 +1,47 @@
+name: Build and publish
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  preliminar:
+    runs-on: ubuntu-latest
+    name: Preliminary tasks
+    steps:
+      - name: Setup tag
+        run: echo "TAG=$(date +%s)" >> tag.txt
+      - name: Upload tag artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: tag
+          path: tag.txt
+  testBuildAndPush:
+    runs-on: ubuntu-latest
+    name: Build and Test the Microservice
+    needs:
+      - preliminar
+    steps:
+      - name: Retrieve tag artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: tag
+      - name: Put tag in env
+        run: echo "TAG=$(cat tag/tag.txt|cut -d = -f 2)" >> $GITHUB_ENV
+      - name: Checkout 
+        uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push API Server
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/wa2g07/simple-service:${{ env.TAG }}
