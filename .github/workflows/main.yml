@@ -5,29 +5,10 @@ on:
     branches: [ main ]
 
 jobs:
-  preliminar:
+  TestBuildAndPush:
     runs-on: ubuntu-latest
-    name: Preliminary tasks
+    name: Test, Build and Push the Microservice
     steps:
-      - name: Setup tag
-        run: echo "TAG=$(date +%s)" >> tag.txt
-      - name: Upload tag artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: tag
-          path: tag.txt
-  testBuildAndPush:
-    runs-on: ubuntu-latest
-    name: Build and Test the Microservice
-    needs:
-      - preliminar
-    steps:
-      - name: Retrieve tag artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: tag
-      - name: Put tag in env
-        run: echo "TAG=$(cat tag/tag.txt|cut -d = -f 2)" >> $GITHUB_ENV
       - name: Checkout 
         uses: actions/checkout@v2
       - name: Login to Docker Hub
@@ -44,4 +25,4 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/wa2g07/simple-service:${{ env.TAG }}
+          tags: ghcr.io/wa2g07/simple-service:${{ github.sha }}
