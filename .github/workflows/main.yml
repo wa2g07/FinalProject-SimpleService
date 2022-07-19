@@ -26,3 +26,16 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/wa2g07/simple-service:${{ github.sha }}
+  DeploymentTrigger:
+    runs-on: ubuntu-latest
+    name: Deployment Trigger
+    needs:
+      - TestBuildAndPush
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.DEVOPSDISPATCHTOKEN }}
+          event-type: simpleservice-event
+          client-payload: '{"ref": "${{ github.ref }}", "tag": "${{ github.sha }}"}'
+          repository: wa2g07/FinalProject-DevOps
