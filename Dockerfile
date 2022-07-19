@@ -1,7 +1,7 @@
 FROM gradle:jdk17-alpine AS build-stage
 
 COPY ./ ./
-RUN  ./gradlew build
+RUN  ./gradlew build --exclude-task test 
 
 FROM openjdk:17-alpine
 

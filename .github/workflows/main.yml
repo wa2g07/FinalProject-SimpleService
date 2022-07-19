@@ -5,9 +5,20 @@ on:
     branches: [ main ]
 
 jobs:
-  TestBuildAndPush:
+  Test:
     runs-on: ubuntu-latest
-    name: Test, Build and Push the Microservice
+    name: Test
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+      - name: Test
+        run: ./gradlew test
+
+  BuildAndPush:
+    runs-on: ubuntu-latest
+    name: Build and Push
+    needs:
+      - Test
     steps:
       - name: Checkout 
         uses: actions/checkout@v2
@@ -30,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deployment Trigger
     needs:
-      - TestBuildAndPush
+      - BuildAndPush
     steps:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
