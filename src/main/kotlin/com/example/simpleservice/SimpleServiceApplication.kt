@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
 @Configuration
 @ConfigurationProperties("controller")
 class ControllerProperties(){
-    lateinit var msg:String
+    lateinit val msg:String
 }
 
 @RestController
